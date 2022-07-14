@@ -1,17 +1,19 @@
 import logo from './logo.svg';
 import './App.css';
-import React from 'react';
+import React, { Suspense } from 'react';
 import Page1 from './components/Page1';
 // import Page2 from './components/Page2'; // not for code splitting
 // import Page3 from './components/Page3'; // not for code splitting
-import AsyncComponent from './components/AsyncComponents'
+// import AsyncComponent from './components/AsyncComponents'
+const Page2Lazy = React.lazy(()=> import('./components/Page2'))//lazy splitting SSR
+const Page3Lazy = React.lazy(()=> import('./components/Page3'))//lazy splitting SSR
 
 class App extends React.Component{
   constructor() {
     super();
     this.state={
-      route:"page1",
-      component:null
+      route:"page1"
+      // component:null
     }
   }
 
@@ -36,15 +38,32 @@ class App extends React.Component{
   //   else 
   //     return(<this.state.component onReact={this.onClickReact}/>);
   // }
-  if(this.state.route === 'page1'){
-       return(<Page1 onReact={this.onClickReact}/>);}
-  else if(this.state.route === 'page2'){
-       const AsyncPage2 = AsyncComponent(()=>import('./components/Page2'));
-       return(<AsyncPage2 onReact={this.onClickReact}/>);}
-  else if(this.state.route === 'page3'){
-    const AsyncPage3 = AsyncComponent(()=>import('./components/Page3'));
-    return(<AsyncPage3 onReact={this.onClickReact}/>);}
-}
+  //async component code splitting
+//   if(this.state.route === 'page1'){
+//        return(<Page1 onReact={this.onClickReact}/>);}
+//   else if(this.state.route === 'page2'){
+//        const AsyncPage2 = AsyncComponent(()=>import('./components/Page2'));
+//        return(<AsyncPage2 onReact={this.onClickReact}/>);}
+//   else if(this.state.route === 'page3'){
+//     const AsyncPage3 = AsyncComponent(()=>import('./components/Page3'));
+//     return(<AsyncPage3 onReact={this.onClickReact}/>);}
+// }
+   if(this.state.route === 'page1'){
+        return(<Page1 onReact={this.onClickReact}/>);}
+   else if(this.state.route === 'page2'){
+        return(
+        <Suspense fallback={<div>Loading..</div>}>  
+          <Page2Lazy onReact={this.onClickReact}/>
+        </Suspense>
+     )}      
+   else if(this.state.route === 'page3'){
+        return(
+        <Suspense fallback={<div>Loading..</div>}>  
+          <Page3Lazy onReact={this.onClickReact}/>
+        </Suspense>
+     )}      
+    }
+ 
 }
 
 export default App;
